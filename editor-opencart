@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta content="light dark" name="color-scheme" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+<style>
+body {
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  width: inherit;
+}
+.results {
+  max-width: calc(80vw - 120px);
+  min-height: 300px;
+  margin: auto;
+  margin-top: 2rem;
+  border: none;
+  background: #0088ff08;
+  padding: 1rem;
+  color: inherit;
+  width: 100%;
+  font-size: inherit;
+}
+:root {
+	--color-white: light-dark(#fff, #555);
+	--color-black: light-dark(#000, #fff);
+	--link: light-dark(blue, cyan);
+	--fontsize: 1.1rem;
+}
+.editor {
+  position: relative;
+  width: inherit;
+  padding: 5rem .5rem 3rem 180px;
+  border: solid 1px #ccc;
+  border-radius: 1rem;
+  box-shadow: 1px 3px 5px #cccccc63;
+  background: var(--color-white);
+  height: 100%;
+  overflow: auto;
+  font-size: var(--fontsize:);
+}
+.editor .bottombar {
+  display: flex;
+  gap: .25rem;
+  margin-top: 3rem;
+}
+.editor button {
+  border-radius: 0;
+  font-size: var(--fontsize);
+}
+.blocks .menuOnOff {
+  position: absolute;
+  border: none;
+  right: calc(100% + 1rem);
+  top: 26px;
+  background: transparent;
+  z-index: 1;
+  height: 23px;
+  width: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.editor .bottombar > button {
+  background: var(--color-black);
+  color: var(--color-white);
+  border: none;
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-family: inherit;
+}
+.editor button.generate, .editor button.addImg, .editor button.addTable {
+  width: fit-content;
+  padding: .5rem .75rem;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.editor .block {
+  position: relative;
+  background-color: #f0f0f02e;
+  margin: 1rem 0;
+  position: relative;
+  white-space: pre-wrap;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.editor .tempblock {
+  position: relative;
+  padding: 5px 0;
+}
+
+#output {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+}
+.editor ul.menu {
+  list-style: none;
+  display: none;
+  position: absolute;
+  width: max-content;
+  right: calc(100% + 10px);
+  top: 0;
+  background-color: var(--color-white);
+  margin: 0;
+  padding: .25rem;
+  user-select: none;
+  z-index: 1;
+  box-shadow: 1px 1px 5px #ccc;
+  height: 200px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  text-wrap: nowrap;
+}
+.editor .menu > button {
+  cursor: pointer;
+  margin: 0;
+  user-select: none;
+  padding: .5em 1em;
+  border: none;
+  border-radius: 0;
+  background: var(--color-white);
+  width: 100%;
+  display: block;
+  font-size: 16px;
+  font-family: inherit;
+  font-weight: bold;
+  font-stretch: expanded;
+  text-align: left;
+  color: inherit;
+  line-height: 1.5;
+}
+.editor div:first-child button.moveUp, .editor div:last-child button.moveDown {
+  background: #ccc;
+  pointer-events: none;
+}
+.editor .remove {
+  color: red;
+  background-color: #ff00001c !important;
+  border: none !important;
+}
+@media (orientation: landscape) {
+	/*.editor .tempblock:focus-within ul.menu {*/
+	.editor .tempblock:not(:has(.block:focus)):hover ul.menu {
+		display:block;
+	}
+}
+.editor button:hover {
+  opacity: .5;
+}
+.editor ul.block li, ol.block li {
+  line-height: 1.5;
+  inset: 0;
+  margin-left: 1rem;
+}
+h1,h2,h3,h4,h5,h6,p,ul,ol,div{position:relative;}
+.editor h1 {font-size: 2rem;line-height: 1.3; letter-spacing: -1px;}
+.editor h2 {font-size: 1.8rem;line-height: 1.3;letter-spacing: -1px;}
+.editor h3 {font-size: 1.7rem;line-height: 1.3;letter-spacing: -1px;}
+.editor h4 {font-size: 1.5rem;line-height: 1.2;}
+.editor h5 {font-size: 1.3rem;line-height: 1.2;}
+.editor h6 {font-size: 1.1rem;line-height: 1.2;}
+.editor p, .editor ul, .editor ol {line-height: 1.8;}
+.blocks h1.block::before,
+.blocks h2.block::before,
+.blocks h3.block::before,
+.blocks h4.block::before,
+.blocks h5.block::before,
+.blocks h6.block::before,
+.blocks p.block::before,
+.blocks ul.block::before,
+.blocks ol.block::before,
+.blocks div.block::before,
+.blocks figure.block::before {  
+  position: absolute;
+  display: block;
+  padding: 0 .25rem;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: .8rem;
+  right: calc(100% + 1rem);
+  font-weight: 500;
+  width: 3rem;
+  text-align: center;
+  top: 5px;
+  text-wrap: nowrap;
+  line-height: 2;
+}
+.blocks figure.block::before {
+  content: "IMG";
+}
+.blocks h1.block::before {
+  content: "H1";
+}
+.blocks h2.block::before {
+  content: "H2";
+}
+.blocks h3.block::before {
+  content: "H3";
+}
+.blocks h4.block::before {
+  content: "H4";
+}
+.blocks h5.block::before {
+  content: "H5";
+}
+.blocks h6.block::before {
+  content: "H6";
+}
+.blocks p.block::before {
+  content: "P";
+}
+.blocks div.block::before {
+  content: "DIV";
+}
+.blocks div.block:has(table)::before {
+  content: "TAB";
+}
+.blocks ol.block::before {
+  content: "OL";
+}
+.blocks ul.block::before {
+  content: "UL";
+}
+.block::selection {
+  color: red;
+  background-color: yellow;
+}
+
+@media (orientation: portrait) {
+    .editor {
+    max-width: 100%;
+    margin: auto;
+    width: 100%;
+    padding: 3rem 1rem;
+  }
+   .editor ul.menu {
+    top: 100%;
+    left: 0;
+  }
+  .editor .menu button {
+    font-size: 1.1rem;
+  }
+   .blocks figure.block::before, .blocks h1.block::before, .blocks h2.block::before, .blocks h3.block::before, .blocks h4.block::before, .blocks h5.block::before, .blocks h6.block::before, .blocks p.block::before, .blocks ul.block::before, .blocks ol.block::before, .blocks div.block::before {
+    top: -26px;
+    left: 0;
+  }
+   .editor .topMenu::before {
+    max-width: 100%;
+  }
+  .toolbar {
+	  left: 0 !important;
+	}
+  .blocks .menuOnOff {
+    left: 0;
+    top: -5px !important;
+    z-index: 10 !important;
+    cursor: pointer;
+  }
+  .editor .tempblock:not(:has(.block:focus)):hover ul.menu,
+   .editor .tempblock:not(:has(.block:focus)):hover .topMenu {
+    //display: none !important;
+  }
+}
+/****inline***/
+.editor .toolbar {
+  position: absolute;
+  background: var(--color-white);
+  padding: 0;
+  z-index: 1000;
+  border: solid 1px;
+  box-shadow: 1px 1px 3px #8c8c8c;
+  display: none;
+  margin: 0;
+  color: var(--color-black);
+}
+.editor .toolbar.active {
+	display: flex;
+}
+.toolbar > button, .toolbar > select {
+  margin: 0;
+  padding: .75rem;
+  border: none;
+    border-right-width: medium;
+    border-right-style: none;
+    border-right-color: currentcolor;
+  background: transparent;
+  border-right: solid 1px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.editor .block a {
+  color: var(--link);
+  cursor: pointer;
+}
+/***add new block****/
+.editor .topMenu {
+  display: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  text-align: right;
+  top: -24px;
+}
+.editor .topMenu > button:hover {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+.editor .topMenu::before {
+  content: "";
+  display: block;
+  width: 100%;
+  background: #000;
+  height: 1px;
+  margin-top: 18px;
+  position: absolute;
+  z-index: -1;
+}
+.editor .topMenu > button {
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  margin: 0;
+  padding: .5rem .5rem;
+  background: var(--color-white);
+  color: var(--color-black);
+  border-top: solid 1px;
+  border-left: solid 1px;
+  border-bottom: solid 1px;
+  border-right: none;
+  border-radius: 0;
+}
+.editor .topMenu > button:last-child {
+  border-right: solid 1px;
+}
+.editor .topMenu button:hover {
+  opacity: 1;
+}
+@media (orientation: landscape) {
+	.editor .tempblock:not(:has(.block:focus)):hover .topMenu {
+	  display: block;
+	}
+}
+.editor [contenteditable]:empty::after {
+    content: attr(data-placeholder);
+    color: grey;
+    display: inline-block;
+}
+.editor div:has(table) {
+ width: 100%;
+}
+.editor div > table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.editor div > table th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+.editor div > table tr:nth-child(even) {background-color: #cecece36;}
+
+.editor .saved-item {
+  display: flex;
+  gap: 1rem;
+  padding: .5rem 1rem;
+  background: #ff000008;
+  color: red;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.editor .saved-item > button {
+  font-size: inherit;
+  border: solid 1px;
+  background: none;
+  font-weight: bold;
+  cursor: pointer;
+  color: red;
+  display: flex;
+  align-content: center;
+}
+
+.fullscreen {
+  background: none;
+  border: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  font-size: 1rem;
+}
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrick Chia Block-Based Editor</title>
+</head>
+<body tabindex="0">
+		
+		
+    <div id="editor" class="editor">
+		<button type="button" class="fullscreen" data-editor="">Fullscreen</button>
+	
+		<div id="blocks" class="blocks"></div>
+        <div class="bottombar">
+			<button type="button" data-editor="editor" class="addBlock">+</button>
+			<button type="button" data-editor="editor" class="addImg">+Image</button>
+			<button type="button" data-editor="editor" class="addTable">+Table</button>
+			<button type="button" data-editor="editor" data-box="results" class="generate">Generate</button>
+		</div>
+			<textarea id="results" class="results" data-editor="editor">&lt;span&gt;test&lt;/span&gt; &lt;div spellcheck=&quot;true&quot;&gt;&lt;table&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;Row 1, Col 1&lt;/td&gt;&lt;td&gt;Row 1, Col 2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Row 2, Col 1&lt;/td&gt;&lt;td&gt;Row 2, Col 2&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt; &lt;img src=&quot;https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZMlf0g9OWvgfDDkhAk8vfxIxC2UcLf1iCYg&amp;s&quot;&gt;   &lt;p&gt;We want everyone who visits the &lt;strong&gt;&lt;strong&gt;CakeDeliver&lt;/strong&gt;&lt;/strong&gt; online cake shop to feel welcome and find the experience rewarding.&lt;/p&gt;&lt;h3&gt;Measures to support accessibility&lt;/h3&gt;&lt;p&gt;CakeDeliver takes the following measures to ensure accessibility of CakeDeliver.com:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Include accessibility as part of our mission statement.&lt;/li&gt;&lt;li&gt;Include accessibility throughout our internal policies.&lt;/li&gt;&lt;li&gt;Integrate accessibility into our procurement practices.&lt;/li&gt;&lt;li&gt;Employ formal accessibility quality assurance methods.&lt;/li&gt;&lt;li&gt;Assign clear accessibility goals and responsibilities.&lt;/li&gt;&lt;li&gt;Provide continual accessibility training for our staff.&lt;/li&gt;&lt;/ul&gt;&lt;h3&gt;What are we doing?&lt;/h3&gt;&lt;p&gt;To help us make the CakeDeliver online cake shop a positive place for everyone, we've been using the &lt;a rel=&quot;nofollow noopener noreferrer&quot; href=&quot;http://www.w3.org/TR/WCAG/&quot; target=&quot;_new&quot;&gt;Web Content Accessibility Guidelines&lt;/a&gt; (WCAG) 2.1. These guidelines explain how to make web content more accessible for people with disabilities, and user friendly for everyone.The guidelines have three levels of accessibility (A, AA and AAA). We&rsquo;ve chosen Level AA as the target for the CakeDeliver website.&lt;/p&gt;&lt;figure&gt;&lt;picture&gt;&lt;img src=&quot;https://cakedeliver.com/image/cache/no_image-100x100.png&quot; alt=&quot;&quot;&gt;&lt;/picture&gt;&lt;figcaption&gt;Testing&lt;/figcaption&gt;&lt;/figure&gt;</textarea>
+
+		</div>
+
+
+<script type="text/javascript">
+'use strict';
+/*!
+ * Block Based Editor for OpenCart
+ * https://chiaseek.com/
+ *
+ * Copyright OpenJS Foundation and other contributors
+ * Released under the MIT license
+ *
+ * Date: 2024-11-30T13:37
+ */
+const editors=document.querySelectorAll(".editor");for(let e=0;e<editors.length;e++){const t=editors[e].id;document.querySelector("#"+t+" .generate").addEventListener("click",generate),document.querySelector("#"+t+" .addImg").addEventListener("click",(()=>addImageBlock(t,!1))),document.querySelector("#"+t+" .addBlock").addEventListener("click",(()=>addBlock(t,!1))),document.querySelector("#"+t+" .addTable").addEventListener("click",(()=>addTable(t,!1)));const n=document.querySelector("#"+t),o=document.querySelector("#"+t+" .fullscreen");function toggleFullscreen(){document.fullscreenElement?(document.exitFullscreen?document.exitFullscreen():document.mozCancelFullScreen?document.mozCancelFullScreen():document.webkitExitFullscreen?document.webkitExitFullscreen():document.msExitFullscreen&&document.msExitFullscreen(),o.textContent="Fullscreen"):(n.requestFullscreen?n.requestFullscreen():n.mozRequestFullScreen?n.mozRequestFullScreen():n.webkitRequestFullscreen?n.webkitRequestFullscreen():n.msRequestFullscreen&&n.msRequestFullscreen(),o.textContent="Exit Fullscreen")}function updateButtonText(){document.fullscreenElement?o.textContent="Exit Fullscreen":o.textContent="Fullscreen"}function generateSavedContentList(e){const t=document.createElement("div");t.id="saveItem"+e,t.classList.add("saved-item");for(let n=0;n<localStorage.length;n++)if(localStorage.key(n)===e){const n=localStorage.getItem(e+"-date");t.textContent=n?"Found Saved: Draft "+n:"Found Saved: Draft ";const o=document.createElement("button");o.dataset.editor=e,o.type="button",o.textContent="Restored";const l=document.createElement("button");l.type="button",l.dataset.editor=e,l.textContent="Clear",l.addEventListener("click",(()=>{const e=l.dataset.editor;localStore.clear(e),localStore.clear(e+"-date"),document.getElementById("saveItem"+e).remove()})),o.addEventListener("click",(()=>{const e=o.dataset.editor,t=localStorage.getItem(e);if(t){const n=document.querySelector("#"+e+" .results");document.getElementById(n.id).innerHTML=t,processContent(e,n.id),document.getElementById("saveItemeditor").textContent="Restored Done."}})),t.appendChild(o),t.appendChild(l),document.querySelector("#"+e+" .blocks").insertAdjacentElement("beforebegin",t)}}o.addEventListener("click",toggleFullscreen),document.addEventListener("fullscreenchange",updateButtonText),document.addEventListener("mozfullscreenchange",updateButtonText),document.addEventListener("webkitfullscreenchange",updateButtonText),document.addEventListener("msfullscreenchange",updateButtonText),n.addEventListener("click",(function(e){e.preventDefault();const o=e.target.getAttribute("data-block");if(e.target.classList.contains("remove")){if(""===document.getElementById(o).innerText.trim())document.getElementById("tempblock"+o).remove();else{confirm("Are you sure you want to delete this block?")&&document.getElementById("tempblock"+o).remove()}}const l=document.querySelector("#"+t+" .blocks");if(e.target.classList.contains("moveUp")){const t=e.target.closest(".tempblock");t&&t.previousElementSibling&&l.insertBefore(t,t.previousElementSibling)}if(e.target.classList.contains("moveDown")){const t=e.target.closest(".tempblock");t&&t.nextElementSibling&&l.insertBefore(t.nextElementSibling,t)}if(e.target.classList.contains("menuOnOff")){e.preventDefault();const t=document.querySelectorAll(".toolbar");for(let e=0;e<t.length;e++){t[e].classList.remove("active")}const n=e.target.getAttribute("data-block"),o=document.querySelector("#tempblock"+n+" .menu"),l=document.querySelector("#tempblock"+n+" .topMenu");"block"===o.style.display?(o.style.display="none",l.style.display="none"):(o.style.display="block",l.style.display="block")}n.addEventListener("click",(e=>closeMenu(e)));const c={h1:()=>convertToTag(t,o,"h1"),h2:()=>convertToTag(t,o,"h2"),h3:()=>convertToTag(t,o,"h3"),h4:()=>convertToTag(t,o,"h4"),h5:()=>convertToTag(t,o,"h5"),h6:()=>convertToTag(t,o,"h6"),div:()=>convertToTag(t,o,"div"),paragraph:()=>convertToTag(t,o,"p"),ol:()=>convertToTag(t,o,"ol"),ul:()=>convertToTag(t,o,"ul"),addBtnBlock:()=>addBlock(t,o),addImageBlock:()=>addImageBlock(t,o),imgAlt:()=>imageOption(o,"alt"),imgUpload:()=>imageUpload(o),imgURL:()=>imageOption(o,"link"),imgWidth:()=>imageOption(o,"width"),imgHeight:()=>imageOption(o,"height"),imgRemove:()=>imageOption(o,"removeCaption"),addRow:()=>addRow(o),removeRow:()=>removeRow(o),addCol:()=>addColumn(o),removeCol:()=>removeColumn(o)};for(const[t,n]of Object.entries(c))if(e.target.classList.contains(t)){n();break}})),document.addEventListener("DOMContentLoaded",(()=>{generateSavedContentList(t)}))}function closeMenu(e){e.preventDefault();const t=document.querySelectorAll(".menu"),n=document.querySelectorAll(".topMenu"),o=document.querySelectorAll(".menuOnOff");for(let l=0;l<t.length;l++){const c=t[l];"block"===c.style.display&&(c.contains(e.target)||o[l].contains(e.target)||(c.style.display="none",n[l].style.display="none"))}}function addTable(e,t){const n=prompt("Enter Number Rows:",5),o=prompt("Enter Number Columns:",4),l=document.querySelector("#"+e+" .blocks"),c=document.createElement("div");c.setAttribute("contenteditable","true"),c.setAttribute("spellcheck","true"),c.setAttribute("tabindex","0"),c.id=Date.now(),c.className="block",n&&o?createTable(c,n,o):createTable(c,5,4);const a=createMenuList(c.id,c,"table");if(t>0){const e=document.getElementById("tempblock"+t);e&&(e.insertAdjacentElement("beforebegin",a),e.focus())}else l.appendChild(a);inlineTool(e,c.id)}function createTable(e,t,n){const o=e;if(!o)return void console.error("Container not found");const l=document.createElement("table");l.id="table"+e.id;for(let e=0;e<t;e++){const t=document.createElement("tr");for(let o=0;o<n;o++){const n=document.createElement("td");n.textContent=`Row ${e+1}, Col ${o+1}`,t.appendChild(n)}l.appendChild(t)}o.appendChild(l)}function addImageBlock(e,t){const n=document.querySelector("#"+e+" .blocks"),o=document.createElement("figure");o.setAttribute("contenteditable","true"),o.setAttribute("tabindex","0"),o.id=Date.now(),o.className="block";const l=document.createElement("picture");l.innerHTML='<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuv7GqevqRqUgCNaskcs87rvMxqN-jENlxNQ&s" alt="" />',o.appendChild(l);const c=document.createElement("figcaption");c.innerText="Caption",o.appendChild(c),o.addEventListener("keydown",(function(t){if("Enter"===t.key&&(t.preventDefault(),addBlock(e,!1),o.blur()),"Delete"===t.key||"Backspace"===t.key){const e=o.querySelector("br"),n=o.innerText.trim();console.log(n.length),document.execCommand("insertHTML",!1,""),e&&(t.preventDefault(),e.remove())}}));const a=createMenuList(o.id,o,"image");if(t>0){const e=document.getElementById("tempblock"+t);e&&(e.insertAdjacentElement("beforebegin",a),e.focus())}else n.appendChild(a)}function addBlock(e,t){const n=document.querySelector("#"+e+" .blocks"),o=document.createElement("p");o.setAttribute("contenteditable","true"),o.setAttribute("tabindex","0"),o.setAttribute("data-placeholder","Type something..."),o.id=Date.now(),o.className="block",o.addEventListener("keydown",(function(t){if("Enter"===t.key&&(t.preventDefault(),addBlock(e,!1),o.blur()),"Delete"===t.key||"Backspace"===t.key){const e=o.querySelector("br"),n=o.innerText.trim();console.log(n.length),document.execCommand("insertHTML",!1,""),e&&(t.preventDefault(),e.remove())}})),o.addEventListener("paste",(function(e){e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData("text/plain");document.execCommand("insertHTML",!1,""),document.execCommand("insertText",!1,t.replace(/<br[^>]*>/g,"*").replace(/[\r\n]+/g,"**"))}));const l=createMenuList(o.id,o,"general");if(t>0){const e=document.getElementById("tempblock"+t);e&&(e.insertAdjacentElement("beforebegin",l),e.focus())}else n.appendChild(l),o.focus();inlineTool(e,o.id)}function createMenuList(e,t,n){const o=document.createElement("div");o.dataset.blockId=t.id,o.id="tempblock"+e,o.className="tempblock";const l=document.createElement("button");l.className="menuOnOff",l.dataset.block=t.id,o.appendChild(l);const c=document.createElement("div");c.className="topMenu";const a=document.createElement("button");a.className="addBtnBlock",a.dataset.block=t.id,a.textContent="Add Block";const r=document.createElement("button");r.className="addImageBlock",r.dataset.block=t.id,r.textContent="Add Image";const i=document.createElement("button");i.className="moveUp",i.dataset.block=t.id,i.textContent="Up";const d=document.createElement("button");d.className="moveDown",d.dataset.block=t.id,d.textContent="Down",c.appendChild(a),c.appendChild(r),c.appendChild(i),c.appendChild(d),o.appendChild(c);const s=document.createElement("ul");let m;s.className="menu",s.dataset.blockId=t.id,m="image"===n?[{className:"remove",text:"Remove Image"},{className:"imgUpload",text:"Upload Image"},{className:"imgURL",text:"Image URL"},{className:"imgRemove",text:"Remove Caption"},{className:"imgWidth",text:"Image Width"},{className:"imgHeight",text:"Image Height"},{className:"imgAlt",text:"Alt"}]:"table"===n?[{className:"remove",text:"Remove Table"},{className:"addRow",text:"Add Row"},{className:"removeRow",text:"Remove Row"},{className:"addCol",text:"Add Column"},{className:"removeCol",text:"Remove Column"}]:[{className:"remove",text:"Remove"},{className:"paragraph",text:"Paragraph"},{className:"div",text:"DIV"},{className:"h1",text:"H1 Heading"},{className:"h2",text:"H2 Heading"},{className:"h3",text:"H3 Heading"},{className:"h4",text:"H4 Heading"},{className:"h5",text:"H5 Heading"},{className:"h6",text:"H6 Heading"},{className:"ul",text:"UL List"},{className:"ol",text:"OL List"}];for(let e=0;e<m.length;e++){const{className:n,text:o}=m[e],l=document.createElement("button");l.type="button",l.dataset.block=t.id,l.className=n,l.textContent=o,s.appendChild(l)}return o.appendChild(t),o.appendChild(s),o.appendChild(inlineToolbar()),o}function inlineToolbar(){const e=document.createElement("div");e.className="toolbar";const t=[{className:"removeFormattingButton",text:"X",title:"Remove formmatting or close"},{className:"boldButton",text:"<b>B</b>",title:"Bold Selected Text"},{className:"italicButton",text:"<i>I</i>",title:"Italic Selected Text"},{className:"underlineButton",text:"<u>U</u>",title:"Underline Selected Text"},{className:"codeButton",text:"Code",title:"Change Selected Text to Code"},{className:"insertLink",text:"Link",title:"Insert Link"}];for(let n=0;n<t.length;n++){const o=t[n],l=document.createElement("button");l.type="button",l.className=o.className,l.title=o.title,l.innerHTML=o.text,e.appendChild(l)}const n=document.createElement("select");n.className="linkTarget";const o=[{value:"_self",text:"_self"},{value:"_blank",text:"_blank"},{value:"_parent",text:"_parent"},{value:"_top",text:"_top"}];for(let e=0;e<o.length;e++){const t=o[e],l=document.createElement("option");l.value=t.value,l.textContent=t.text,n.appendChild(l)}return e.appendChild(n),e}function generate(){const e=this.getAttribute("data-box"),t=this.getAttribute("data-editor");document.getElementById(e).value="";const n=document.querySelectorAll("#"+t+" .blocks .block");let o=[];for(let e=0;e<n.length;e++){const t=n[e].cloneNode(!0);t.removeAttribute("contenteditable"),t.removeAttribute("tabindex"),t.removeAttribute("id"),t.removeAttribute("class"),t.removeAttribute("data-placeholder"),cleanUpNestedTags(t),t.innerHTML=t.innerHTML.replace(/<br[^>]*>/g,""),t.innerHTML=t.innerHTML.replace(/<li[^>]*>\s*<\/li>/g,""),t.innerHTML=t.innerHTML.replace(/id="table[^"]*"/g,""),("figure"===t.tagName.toLowerCase()||""!==t.textContent.trim()&&""!==t.innerHTML.trim())&&o.push(t.outerHTML)}let l=o.join("\n");l=l.replace(/<br[^>]*>/g,"").replace(/\n/g,""),l=l.replace(/[\r\n]+/g,"");let c=sanitizeHtml(l);document.getElementById(e).value=sanitizeHtml(c),l.length>0&&localStore.save(t,sanitizeHtml(c))}function cleanUpNestedTags(e){const t=["strong","em","b","i","br","span"];for(let n=0;n<t.length;n++){const o=t[n],l=e.getElementsByTagName(o);for(let e=l.length-1;e>=0;e--){const t=l[e];if(t.parentNode&&t.parentNode.tagName.toLowerCase()===o){for(;t.firstChild;)t.parentNode.insertBefore(t.firstChild,t);t.parentNode.removeChild(t)}}}}const convertToTag=(e,t,n)=>{const o=document.getElementById(t),l=o.tagName,c=o.innerText,a=document.createElement(n);if(a.setAttribute("contenteditable","true"),a.setAttribute("tabindex","0"),a.id=t,a.setAttribute("data-placeholder","Type something..."),a.className="block","OL"===l&&"ul"===n||"UL"===l&&"ol"===n){const e=o.querySelectorAll("li");for(let t=0;t<e.length;t++){const n=e[t],o=document.createElement("li");o.innerText=n.innerText,a.appendChild(o)}}else if("ol"===n||"ul"===n){const e=document.createElement("li");e.innerText=c,a.appendChild(e)}else a.innerText=c.replace(/<br[^>]*>/g,"").replace(/[\r\n]+/g,"");a.addEventListener("keydown",(function(t){if("ol"!==n&&"ul"!==n&&("Enter"===t.key&&(t.preventDefault(),addBlock(e,!1),o.blur()),"Delete"===t.key||"Backspace"===t.key)){const e=o.querySelector("br");o.innerText.trim();document.execCommand("insertHTML",!1,""),e&&(t.preventDefault(),e.remove())}})),a.addEventListener("paste",(function(e){e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData("text/plain");document.execCommand("insertHTML",!1,""),document.execCommand("insertText",!1,t.replace(/<br[^>]*>/g,"*").replace(/[\r\n]+/g,"**"))})),o.replaceWith(a),a.focus()};function inlineTool(e,t){const n=document.querySelector("#"+e),o=(n.querySelector("#tempblock"+t),document.getElementById(t)),l=n.querySelector("#tempblock"+t+" .toolbar"),c=n.querySelector("#tempblock"+t+" .boldButton"),a=n.querySelector("#tempblock"+t+" .italicButton"),r=n.querySelector("#tempblock"+t+" .underlineButton"),i=n.querySelector("#tempblock"+t+" .codeButton"),d=n.querySelector("#tempblock"+t+" .removeFormattingButton"),s=n.querySelector("#tempblock"+t+" .insertLink"),m=n.querySelector("#tempblock"+t+" .linkTarget");function u(e){const t=window.getSelection();if(console.log("select2: "+t),t.rangeCount>0){const n=t.getRangeAt(0),o=n.extractContents();console.log("selectText: "+o);const c=o.parentNode;if("function"==typeof document.execCommand){const t=document.createElement(e);t.appendChild(o),n.insertNode(t),document.execCommand("insertHTML",!1,t.outerHTML)}else if(c&&c.nodeName.toLowerCase()===e){const e=document.createTextNode(o.textContent);n.insertNode(e),c.remove()}else{const t=document.createElement(e);t.appendChild(o),n.insertNode(t)}l.classList.remove("active")}}o.addEventListener("focus",(e=>{const t=document.querySelectorAll(".toolbar");for(let e=0;e<t.length;e++)t[e].classList.remove("active");document.querySelector("#tempblock"+o.id+" .toolbar").classList.add("active")})),c.addEventListener("click",(()=>{console.log("CLICK"),u("strong")})),a.addEventListener("click",(()=>{u("em")})),r.addEventListener("click",(()=>{u("u")})),i.addEventListener("click",(()=>{u("code")})),d.addEventListener("click",(()=>{const e=window.getSelection();if(e.rangeCount>0){const t=e.getRangeAt(0),n=t.extractContents(),o=document.createElement("div");o.appendChild(n);const c=o.querySelectorAll("a");for(let e=0;e<c.length;e++){const t=document.createTextNode(c[e].textContent);c[e].parentNode.replaceChild(t,c[e])}const a=document.createTextNode(o.textContent);t.deleteContents(),t.insertNode(a),l.classList.remove("active")}})),s.addEventListener("click",(()=>{const e=prompt("Enter the link URL:","https://"),t=m.value;if(e){const n=window.getSelection();if(n.rangeCount>0){const o=n.getRangeAt(0),l=n.toString(),c=document.createElement("a");c.href=e,c.target=t,c.rel="noopener",c.textContent=l,o.deleteContents(),o.insertNode(c),function(e){e.addEventListener("click",(t=>{t.preventDefault();const n=prompt("Change link URL:",e.href);if(n){e.href=n;const t=prompt("Change rel Attribute: help, nofollow, tag, privacy-policy, terms-of-service",e.rel);t&&(e.rel=t)}}))}(c),function(e){m.addEventListener("change",(t=>{t.preventDefault(),e.target=m.value}))}(c)}}l.classList.remove("active")}))}function addRow(e){const t=document.getElementById("table"+e),n=t.insertRow(-1),o=t.rows[0].cells.length;for(let e=0;e<o;e++){n.insertCell(e).innerHTML="New Row, Cell "+(e+1)}}function removeRow(e){const t=document.getElementById("table"+e),n=t.rows.length;n>1?t.deleteRow(n-1):alert("Cannot remove the header row.")}function addColumn(e){const t=document.getElementById("table"+e),n=t.rows.length;for(let e=0;e<n;e++){t.rows[e].insertCell(-1).innerHTML="New Cell "+(e+1)}}function removeColumn(e){const t=document.getElementById("table"+e),n=t.rows.length;if(t.rows[0].cells.length>1)for(let e=0;e<n;e++)t.rows[e].deleteCell(-1);else alert("Cannot remove the last column.")}function imageOption(e,t){const n=document.getElementById(e),o=n.querySelector("img");if("alt"===t){const e=prompt("Image Alt:",o.alt);e&&(o.alt=e)}if("link"===t){const e=prompt("Image Link:",o.src);e&&(o.src=e)}if("width"===t){const e=prompt("Image Width:",o.width);e&&(o.width=e)}if("height"===t){const e=prompt("Image Width:",o.height);e&&(o.height=e)}if("removeCaption"===t){const e=n.querySelector("figcaption");e&&n.removeChild(e)}}function imageUpload(e){const t=document.getElementById("form-upload");t&&t.remove();const n=document.createElement("form");n.enctype="multipart/form-data",n.id="form-upload",n.style.display="none";const o=document.createElement("input");o.type="file",o.name="file[]",o.multiple=!0,n.appendChild(o),document.body.prepend(n),o.click(),"undefined"!=typeof timer&&clearInterval(timer),timer=setInterval((function(){if(""!==o.value){clearInterval(timer);const t=new FormData(n);fetch("index.php?route=common/filemanager/upload&token=<?php echo $token; ?>&directory="+0,{method:"POST",body:t}).then((e=>e.json())).then((t=>{if(console.log("Upload: "+t.file.url),t.error&&alert(t.error),t.success){document.getElementById(e).querySelector("img").src=t.file.url}})).catch((e=>{alert(e)})).finally((()=>{}))}}),500)}function processContent(e,t){const n=document.getElementById(t).value.replace(/[\r\n]+/g," ").replace(/\s{2,}/g," ").replace(/>\s+</g,"><").replace(/<span[^>]*>(.*?)<\/span>/gi,"$1"),o=(new DOMParser).parseFromString(n,"text/html");o.querySelectorAll("span").forEach((e=>e.remove()));o.querySelectorAll("br").forEach((e=>e.remove()));const l=document.querySelector("#"+e+" .blocks");l.innerHTML="";let c=Date.now();const a=o.body.childNodes;for(let t=0;t<a.length;t++){const n=a[t];if(n.nodeType===Node.ELEMENT_NODE){const t=n.tagName.toLowerCase();let o;if("img"===t){console.log("img: "+t+" : "+n.src),o=document.createElement("figure"),o.setAttribute("contenteditable","true"),o.setAttribute("tabindex","0"),o.id=c,o.className="block";const e=document.createElement("picture"),l=document.createElement("img");l.src=n.src;const a=document.createElement("figcaption");a.innerText="Caption",e.appendChild(l),o.appendChild(e),o.appendChild(a)}else{if(n.innerHTML.includes("<table")||/<table\b[^>]*>/i.test(n.innerHTML)){const e=(new DOMParser).parseFromString(n.innerHTML,"text/html"),t=e.querySelector("table");t&&(t.id="table"+c),n.innerHTML=e.body.innerHTML}o=document.createElement(t),o.innerHTML=n.innerHTML,o.setAttribute("contenteditable","true"),o.setAttribute("tabindex","0"),o.id=c,o.className="block"}if("figure"===t||"img"===t){const e=createMenuList(c,o,"image");l.appendChild(e)}else if(n.innerHTML.includes("<table")||/<table\b[^>]*>/i.test(n.innerHTML)){const e=createMenuList(c,o,"table");l.appendChild(e)}else{const e=createMenuList(c,o,"general");l.appendChild(e)}o.addEventListener("keydown",(function(t){if("Enter"===t.key&&(t.preventDefault(),addBlock(e,!1),o.blur()),"Delete"===t.key||"Backspace"===t.key){const e=o.querySelector("br"),n=o.innerText.trim();console.log(n.length),document.execCommand("insertHTML",!1,""),e&&(t.preventDefault(),e.remove())}})),o.addEventListener("paste",(function(e){e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData("text/plain");document.execCommand("insertHTML",!1,""),document.execCommand("insertText",!1,t.replace(/<br[^>]*>/g,"*").replace(/[\r\n]+/g,"**"))})),inlineTool(e,c),c++}}}function sanitizeHtml(e){const t=document.createElement("div");t.innerHTML=e;const n=["b","i","em","strong","a","p","u","ul","ol","li","h1","h2","h3","h4","h5","h6","img","table","tr","td"];return function e(t){if(t.nodeType===Node.ELEMENT_NODE){if(!n.includes(t.tagName.toLowerCase()))return void t.remove();const o=[];for(let e of Array.from(t.attributes))"href"!==e.name&&"target"!==e.name&&o.push(e.name);for(let e of o)t.removeAttribute(e);for(let n of Array.from(t.childNodes))e(n)}}(t),t.innerHTML}document.addEventListener("DOMContentLoaded",(function(){const e=document.querySelectorAll(".results");for(let t=0;t<e.length;t++){const n=e[t],o=n.getAttribute("data-editor");""!==n.value.trim()?processContent(o,n.id):addBlock(o,!1)}}));const localStore={save:(e,t)=>{const n=new Date;localStorage.setItem(e,t),localStorage.setItem(e+"-date",n.toISOString())},load:(e,t)=>{const n=localStorage.getItem(e);n&&(document.getElementById("results"+e).innerHTML=n)},clear:e=>{localStorage.removeItem(e)}};
+</script>
+</body>
+</html>
