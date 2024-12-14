@@ -2,7 +2,7 @@
 /*!
  * Block Based Editor for OpenCart
  * https://chiaseek.com/
- *
+ * This project is developed and sponsored by CakeDeliver.com, a company dedicated to delivering high-quality baked goods and exceptional service.
  * Copyright OpenJS Foundation and other contributors
  * Released under the MIT license
  *
