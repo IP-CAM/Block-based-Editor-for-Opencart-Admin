@@ -90,10 +90,12 @@ body {
   display: flex;
   overflow-y: scroll;
 }
-
 section {
   margin: auto;
   max-width: 80vw;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
 }
 section > h1 {
   font-size: 63px;
@@ -105,22 +107,25 @@ section > p {
   letter-spacing: -0.019em;
   color: #fff;
 }
-a {
-}
+
 section > div > a {
   font-size: 24px;
   color: #fff !important;
   padding: .25rem 1rem .5rem;
   border: solid;
   display: flex;
-  border-radius: 1rem;
   text-decoration: none;
   align-items: center;
+  text-wrap: nowrap;
+  user-select: none;
+  cursor: pointer;
 }
 section > div {
   display: flex;
   gap: 1rem;
-  margin: 1rem 0;
+  margin: 3rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 </style>
 <head>
@@ -134,12 +139,11 @@ section > div {
 	<p>This editor uses native ECMAScript and CSS, with no third-party code. Since this editor is used internally in OpenCart, it does not need powerful or complex features. The main goal is to make maintenance and updates easier. </p>
 
 	<div>
-		<a href="https://mypatricks.github.io/block-based-editor-for-opencart-admin/demo.html?2">Live Demo</a>
-		<a href="https://chiaseek.com/code/opencart/article/replace-existing-opencart-editor-to-new-block-based-editor/">Installation</a>
-		<a href="https://github.com/mypatricks/block-based-editor-for-opencart-admin">Code in Github</a>
+		<a rel="noopener" href="https://mypatricks.github.io/block-based-editor-for-opencart-admin/demo.html?2">Live Demo</a>
+		<a rel="noopener" href="https://chiaseek.com/code/opencart/article/replace-existing-opencart-editor-to-new-block-based-editor/">Installation</a>
+		<a rel="noopener" href="https://github.com/mypatricks/block-based-editor-for-opencart-admin">Code in Github</a>
 	</div>
-
-<section>
-
-</section></section></body>
+	<p><a href="https://x.com/mypatricks">@mypatricks</a></p>
+</section>
+</body>
 </html>
