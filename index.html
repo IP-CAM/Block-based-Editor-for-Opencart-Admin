@@ -3,6 +3,7 @@
 <meta content="light dark" name="color-scheme" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 <style>
+
 /* Box sizing rules */
 *,
 *::before,
@@ -77,14 +78,49 @@ textarea:not([rows]) {
   scroll-margin-block: 5ex;
 }
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Inter var",-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
   font-size: 1rem;
   font-weight: 500;
-  max-width: 100%;
-  margin: 0;
+  margin: auto;
   padding: 0;
   position: relative;
   width: 100%;
+  background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+  position: relative;
+  display: flex;
+  overflow-y: scroll;
+}
+
+section {
+  margin: auto;
+  max-width: 80vw;
+}
+section > h1 {
+  font-size: 63px;
+  letter-spacing: -2px;
+  color: #fff;
+}
+section > p {
+  font-size: 24px;
+  letter-spacing: -0.019em;
+  color: #fff;
+}
+a {
+}
+section > div > a {
+  font-size: 24px;
+  color: #fff !important;
+  padding: .25rem 1rem .5rem;
+  border: solid;
+  display: flex;
+  border-radius: 1rem;
+  text-decoration: none;
+  align-items: center;
+}
+section > div {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 </style>
 <head>
@@ -93,9 +129,17 @@ body {
     <title>Patrick Chia Block-Based Editor</title>
 </head>
 <body>
-<h1>Block-Based Editor</h1>
+  <section>
+	<h1>Block-Based Editor for OpenCart</h1>
+	<p>This editor uses native ECMAScript and CSS, with no third-party code. Since this editor is used internally in OpenCart, it does not need powerful or complex features. The main goal is to make maintenance and updates easier. </p>
 
-<a href="https://mypatricks.github.io/block-based-editor-for-opencart-admin/demo.html?2">Live Demo</a>
-<a href="https://chiaseek.com/code/opencart/article/replace-existing-opencart-editor-to-new-block-based-editor/">Installation</a>
-</body>
+	<div>
+		<a href="https://mypatricks.github.io/block-based-editor-for-opencart-admin/demo.html?2">Live Demo</a>
+		<a href="https://chiaseek.com/code/opencart/article/replace-existing-opencart-editor-to-new-block-based-editor/">Installation</a>
+		<a href="https://github.com/mypatricks/block-based-editor-for-opencart-admin">Code in Github</a>
+	</div>
+
+<section>
+
+</section></section></body>
 </html>
